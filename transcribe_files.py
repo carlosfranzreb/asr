@@ -8,8 +8,8 @@ from argparse import ArgumentParser
 import whisper
 
 
-def main(data_folder, dump_folder):
-    model = whisper.load_model("large")
+def main(data_folder, dump_folder, model, lang):
+    model = whisper.load_model(model)
     os.makedirs(dump_folder, exist_ok=True)
     # Loop through all the audio files
     for audio_file in os.listdir(data_folder):
@@ -20,14 +20,16 @@ def main(data_folder, dump_folder):
                 # Transcribe the audio file
                 f.write(
                     model.transcribe(
-                        os.path.join(data_folder, audio_file), language="de"
+                        os.path.join(data_folder, audio_file), language=lang
                     )["text"]
                 )
 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
+    parser.add_argument("--model", help="Path to the model")
+    parser.add_argument("--language", help="Language of the audio files")
     parser.add_argument("--data_folder", help="Folder containing audio files")
     parser.add_argument("--dump_folder", help="Folder to dump text files")
     args = parser.parse_args()
-    main(args.data_folder, args.dump_folder)
+    main(args.data_folder, args.dump_folder, args.model, args.language)
